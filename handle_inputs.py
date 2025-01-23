@@ -3,6 +3,12 @@ import pandas as pd
 from graphs import *
 
 
+def get_color_mapping(df):
+    unique_options = df["binning_option"].unique()
+    colors = px.colors.qualitative.Plotly
+    return {option: colors[i % len(colors)] for i, option in enumerate(unique_options)}
+
+
 def select_features_from_csv(df):
     st.sidebar.write("### Select Features")
     attribute_features = st.sidebar.multiselect("Choose the attribute features:", df.columns.tolist())
@@ -37,13 +43,13 @@ def process_inputs(df, binning_df):
     task_option = select_task_option()
     col = st.columns([2, 1])
     col1, col2 = col[0], col[1]
-    best_df = binning_df.iloc[:2]  # Sample data for testing
+    best_df = binning_df # binning_df.iloc[:2]  # Sample data for testing
     new_graph_method_flag = False
+    color_mapping = get_color_mapping(best_df)
 
     # Check if attributes, outcome, and task are selected
     if attribute_features and outcome_feature != "Select Outcome" and task_option != "Select Task":
         with col1:
-            st.write("### Graphs")
             graph_method = st.selectbox("Select Graph Method", ["", "Naive", "SeerCuts"], index=["", "Naive", "SeerCuts"].index(st.session_state.selected_graph))
 
             # Update the session state with the selected graph
@@ -60,10 +66,10 @@ def process_inputs(df, binning_df):
                 st.session_state.selected_sorting = sorting_method
                 # display_table(st.session_state.selected_sorting, best_df, col)
         if st.session_state.selected_graph:
-            display_graph(st.session_state.selected_graph, best_df, col, new_graph_method_flag)
+            display_graph(st.session_state.selected_graph, best_df, col, new_graph_method_flag, color_mapping)
 
         if st.session_state.selected_sorting:
-            display_table(st.session_state.selected_sorting, best_df, col)
+            display_table(st.session_state.selected_sorting, best_df, col, color_mapping)
 
     else:
         st.warning("Please select all required options (Attributes, Outcome, Task) to proceed.")
