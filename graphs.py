@@ -2,6 +2,18 @@ import time
 import plotly.express as px
 import pandas as pd
 import streamlit as st
+from streamlit_plotly_events import plotly_events
+
+
+if "clicked_point" not in st.session_state:
+    st.session_state.clicked_point = None
+
+
+def show_histogram(df, clicked_data):
+    # TODO: add here the real histograms
+    utility_values = df['utility']
+    fig_hist = px.histogram(utility_values, nbins=5, title="Histogram")
+    st.plotly_chart(fig_hist)
 
 
 def plot_graph(df, title, delay, new_method_flag, color_mapping):
@@ -15,13 +27,15 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
             progress_bar.progress(i)
             time.sleep(delay / 100)
         progress_bar.empty()
+        status_text.text("")
+
     fig = px.scatter(
         df,
         x="utility",
         y="semantic",
         color="binning_option",
         color_discrete_map=color_mapping,
-        hover_data={"binning_option": True, "utility": True, "semantic": True}
+        hover_data={"binning_option": False, "utility": True, "semantic": True}
     )
 
     # Update marker size and layout
@@ -30,13 +44,16 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
         title=title,
         xaxis_title="Utility",
         yaxis_title="Semantic",
-        font=dict(size=30)
+        font=dict(size=16),
+        showlegend=False
     )
-    st.plotly_chart(fig, use_container_width=True)
+    clicked_point = plotly_events(fig, click_event=True, select_event=False)
 
-    if new_method_flag:
-        status_text.text("")
-
+    # Display clicked data if available
+    if clicked_point:
+        point = clicked_point[0]  # Access the first clicked point
+        st.write(f"You clicked on: Utility = {point['x']}, Semantic = {point['y']}")
+        show_histogram(df, clicked_point)
     # Display elapsed time
     elapsed_time = time.time() - start_time
     st.write(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds")
