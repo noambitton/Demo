@@ -23,9 +23,12 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
         progress_bar = st.progress(0)
         status_text = st.empty()
         status_text.text("We are searching the best strategy for you")
+        time_past = 0
         for i in range(1, 101):
+            status_text.text(f"{time_past} seconds")
             progress_bar.progress(i)
             time.sleep(delay / 100)
+            time_past += delay / 100
         progress_bar.empty()
         status_text.text("")
 
