@@ -82,18 +82,24 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
     write_to_screen(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds", 22)
 
 
-def display_graph(selected_method, best_df, col, new_method_flag, color_mapping):
+def display_graph(selected_method, best_binning_df_naive, best_binning_df_seercuts, col, new_method_flag, color_mapping_naive, color_mapping_seercuts):
     col1, col2 = col[0], col[1]
     with col1:
         if selected_method == "Naive":
-            plot_graph(best_df, "Naive Method: Utility vs Semantic", 5, new_method_flag, color_mapping)
+            plot_graph(best_binning_df_naive, "Naive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive)
         elif selected_method == "SeerCuts":
-            plot_graph(best_df, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping)
+            plot_graph(best_binning_df_seercuts, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts)
 
 
-def display_table(sort_order, best_df, col, color_mapping):
+def display_table(sort_order, selected_method, best_binning_df_naive, best_binning_df_seercuts, col, color_mapping_naive, color_mapping_seercuts):
     col1, col2 = col[0], col[1]
     with col2:
+        if selected_method == "Naive":
+            best_df = best_binning_df_naive
+            color_mapping = color_mapping_naive
+        else:
+            best_df = best_binning_df_seercuts
+            color_mapping = color_mapping_seercuts
         if sort_order == "Utility":
             sorted_binning_df = best_df.sort_values(by="Utility", ascending=False)
         elif sort_order == "Semantic":

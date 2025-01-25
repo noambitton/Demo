@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from graphs import *
-
+from consts import *
 
 def get_color_mapping(df):
     unique_options = df["ID"].astype(str).unique()
@@ -36,7 +36,7 @@ def handle_file_upload():
         return None
 
 
-def process_inputs(df, binning_df):
+def process_inputs(df):
     # Using session_state to retain graph and sorting method choices
     if 'selected_graph' not in st.session_state:
         st.session_state.selected_graph = ""
@@ -47,11 +47,17 @@ def process_inputs(df, binning_df):
     task_option = select_task_option()
     col = st.columns([2, 1])
     col1, col2 = col[0], col[1]
-    best_df = binning_df # binning_df.iloc[:2]  # Sample data for testing
-    best_df['ID'] = best_df['ID'].astype(str)
+
+    best_binning_df_naive = binning_df_naive[binning_df_naive["Pareto"] == 1]
+    best_binning_df_seercuts = binning_df_seercuts[binning_df_seercuts["Pareto"] == 1]
+
+    best_binning_df_naive['ID'] = best_binning_df_naive['ID'].astype(str)
+    best_binning_df_seercuts['ID'] = best_binning_df_seercuts['ID'].astype(str)
     new_graph_method_flag = False
 
-    color_mapping = get_color_mapping(best_df)
+    color_mapping_naive = get_color_mapping(best_binning_df_naive)
+    color_mapping_seercuts = get_color_mapping(best_binning_df_seercuts)
+
     # Update the check to ensure both attributes, outcome, task, graph method, and sorting method are selected before displaying the content
     if attribute_features and outcome_feature != "Select Outcome" and task_option != "Select Task":
         with col1:
@@ -82,10 +88,10 @@ def process_inputs(df, binning_df):
         # Now only show the graph and table if both are selected
         if graph_method and sorting_method:
             if st.session_state.selected_graph:
-                display_graph(st.session_state.selected_graph, best_df, col, new_graph_method_flag, color_mapping)
+                display_graph(st.session_state.selected_graph, best_binning_df_naive, best_binning_df_seercuts, col, new_graph_method_flag, color_mapping_naive, color_mapping_seercuts)
 
             if st.session_state.selected_sorting:
-                display_table(st.session_state.selected_sorting, best_df, col, color_mapping)
+                display_table(st.session_state.selected_sorting, graph_method, best_binning_df_naive, best_binning_df_seercuts, col, color_mapping_naive, color_mapping_seercuts)
 
     else:
         st.warning("Please select all required options (Attributes, Outcome, Task, Graph, Sorting) to proceed.")

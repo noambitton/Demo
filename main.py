@@ -13,5 +13,5 @@ st.session_state.clicked_point = False
 
 df = handle_file_upload()
 if df is not None:
-    process_inputs(df, binning_df)
+    process_inputs(df)
 
