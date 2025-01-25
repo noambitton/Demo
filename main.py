@@ -2,12 +2,15 @@ import streamlit as st
 from consts import *
 from graphs import *
 from handle_inputs import *
+from fonts import *
 
 # streamlit run C:/technion/semester7/Demo/main.py
 st.set_page_config(layout="wide", page_title="SeerCuts", page_icon=":pencil2:")
-st.write("### SeerCuts: Find the best binning for your dataset")
+write_to_screen("SeerCuts: Find the best binning for your dataset", 40)
 
-st.sidebar.write("## Inputs :page_with_curl:")
+enlarge_sidebar_text()
+
+st.sidebar.markdown('<div style="font-size: 30px; font-weight: bold;">Inputs <span style="font-size: 30px;">&#128221;</span></div>', unsafe_allow_html=True)
 
 df = handle_file_upload()
 if df is not None:

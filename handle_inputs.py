@@ -4,26 +4,30 @@ from graphs import *
 
 
 def get_color_mapping(df):
-    unique_options = df["binning_option"].unique()
+    unique_options = df["ID"].astype(str).unique()
     colors = px.colors.qualitative.Plotly
     return {option: colors[i % len(colors)] for i, option in enumerate(unique_options)}
 
 
 def select_features_from_csv(df):
-    st.sidebar.write("### Select Features")
+    enlarge_sidebar_widgets()
+    write_sidebar_to_screen("Select Features", 22)
+    enlarge_selectbox()
     attribute_features = st.sidebar.multiselect("Choose the attribute features:", df.columns.tolist())
+
     outcome_feature = st.sidebar.selectbox("Choose the outcome feature:", ["Select Outcome"] + df.columns.tolist())
     return attribute_features, outcome_feature
 
 
 def select_task_option():
-    # Dropdown for Task selection
+    enlarge_selectbox()
     task_option = st.sidebar.selectbox("Choose a Task",
                                        ["Select Task", "Visualizations", "Prediction", "Data Imputation"])
     return task_option
 
 
 def handle_file_upload():
+    enlarge_file_uploader_label()
     uploaded = st.sidebar.file_uploader("#### Upload a dataset", type=["csv"])
     if uploaded:
         return pd.read_csv(uploaded)
@@ -44,13 +48,18 @@ def process_inputs(df, binning_df):
     col = st.columns([2, 1])
     col1, col2 = col[0], col[1]
     best_df = binning_df # binning_df.iloc[:2]  # Sample data for testing
+    best_df['ID'] = best_df['ID'].astype(str)
     new_graph_method_flag = False
-    color_mapping = get_color_mapping(best_df)
 
-    # Check if attributes, outcome, and task are selected
+    color_mapping = get_color_mapping(best_df)
+    # Update the check to ensure both attributes, outcome, task, graph method, and sorting method are selected before displaying the content
     if attribute_features and outcome_feature != "Select Outcome" and task_option != "Select Task":
         with col1:
-            graph_method = st.selectbox("Select Graph Method", ["", "Naive", "SeerCuts"], index=["", "Naive", "SeerCuts"].index(st.session_state.selected_graph))
+            enlarge_selectbox()
+            graph_method = st.selectbox("Select Graph Method", ["", "Naive", "SeerCuts"],
+                                        index=2 if not st.session_state.selected_graph else ["", "Naive",
+                                                                                             "SeerCuts"].index(
+                                            st.session_state.selected_graph))
 
             # Update the session state with the selected graph
             if graph_method != st.session_state.selected_graph:
@@ -59,18 +68,24 @@ def process_inputs(df, binning_df):
                 # display_graph(st.session_state.selected_graph, best_df, col)
 
         with col2:
-            sorting_method = st.selectbox("Select Sorting Method", ["", "Utility", "Semantic"], index=["", "Utility", "Semantic"].index(st.session_state.selected_sorting))  # Keep previous choice
+            enlarge_selectbox()
+            sorting_method = st.selectbox("Select Sorting Method", ["", "Utility", "Semantic"],
+                                          index=1 if not st.session_state.selected_sorting else ["", "Utility",
+                                                                                                 "Semantic"].index(
+                                              st.session_state.selected_sorting))  # Utility is default
 
             # Update the session state with the selected sorting method
             if sorting_method != st.session_state.selected_sorting:
                 st.session_state.selected_sorting = sorting_method
                 # display_table(st.session_state.selected_sorting, best_df, col)
-        if st.session_state.selected_graph:
-            display_graph(st.session_state.selected_graph, best_df, col, new_graph_method_flag, color_mapping)
 
-        if st.session_state.selected_sorting:
-            display_table(st.session_state.selected_sorting, best_df, col, color_mapping)
+        # Now only show the graph and table if both are selected
+        if graph_method and sorting_method:
+            if st.session_state.selected_graph:
+                display_graph(st.session_state.selected_graph, best_df, col, new_graph_method_flag, color_mapping)
+
+            if st.session_state.selected_sorting:
+                display_table(st.session_state.selected_sorting, best_df, col, color_mapping)
 
     else:
-        st.warning("Please select all required options (Attributes, Outcome, Task) to proceed.")
-
+        st.warning("Please select all required options (Attributes, Outcome, Task, Graph, Sorting) to proceed.")
