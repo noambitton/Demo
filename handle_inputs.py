@@ -48,8 +48,8 @@ def process_inputs(df):
     col = st.columns([2, 1])
     col1, col2 = col[0], col[1]
 
-    best_binning_df_naive = binning_df_naive[binning_df_naive["Pareto"] == 1]
-    best_binning_df_seercuts = binning_df_seercuts[binning_df_seercuts["Pareto"] == 1]
+    best_binning_df_naive = binning_df[(binning_df["Pareto"] == 1)]
+    best_binning_df_seercuts = binning_df[binning_df["Estimated"] == 1]
 
     best_binning_df_naive['ID'] = best_binning_df_naive['ID'].astype(str)
     best_binning_df_seercuts['ID'] = best_binning_df_seercuts['ID'].astype(str)

@@ -97,8 +97,8 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
         if selected_method == "Naive":
             best_df = best_binning_df_naive
             color_mapping = color_mapping_naive
-        else:
-            best_df = best_binning_df_seercuts
+        elif selected_method == "SeerCuts":
+            best_df = best_binning_df_naive
             color_mapping = color_mapping_seercuts
         if sort_order == "Utility":
             sorted_binning_df = best_df.sort_values(by="Utility", ascending=False)
