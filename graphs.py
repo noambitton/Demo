@@ -16,48 +16,6 @@ def show_histogram(df, clicked_data):
     st.plotly_chart(fig_hist)
 
 
-# def plot_graph(df, title, delay, new_method_flag, color_mapping):
-#     start_time = time.time()
-#
-#     if new_method_flag:
-#         progress_bar = st.progress(0)
-#         status_text = st.empty()
-#         status_text.text("We are searching the best strategy for you")
-#         for i in range(1, 101):
-#             progress_bar.progress(i)
-#             time.sleep(delay / 100)
-#         progress_bar.empty()
-#         status_text.text("")
-#
-#     fig = px.scatter(
-#         df,
-#         x="Utility",
-#         y="Semantic",
-#         color="ID",
-#         color_discrete_map=color_mapping,
-#         hover_data={"ID": False, "Utility": True, "Semantic": True, "Partition": True}
-#     )
-#
-#     fig.update_traces(marker=dict(size=12))
-#     fig.update_layout(
-#         title=title,
-#         xaxis_title="Utility",
-#         yaxis_title="Semantic",
-#         font=dict(size=16),
-#         showlegend=False,
-#         coloraxis_showscale=False
-#     )
-#     clicked_point = plotly_events(fig, click_event=True, select_event=False)
-#
-#     if clicked_point:
-#         point = clicked_point[0]
-#         write_to_screen(f"You clicked on: Utility = {point['x']}, Semantic = {point['y']}", 30)
-#         write_to_screen(f"Partition: {df.iloc[point['pointIndex']]['Partition']}", 30)
-#
-#     elapsed_time = time.time() - start_time
-#     write_to_screen(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds", 30)
-
-
 def plot_graph(df, title, delay, new_method_flag, color_mapping):
     start_time = time.time()
 
@@ -98,7 +56,7 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
         show_histogram(df, clicked_point)
     # Display elapsed time
     elapsed_time = time.time() - start_time
-    write_to_screen(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds", 30)
+    write_to_screen(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds", 22)
 
 
 def display_graph(selected_method, best_df, col, new_method_flag, color_mapping):

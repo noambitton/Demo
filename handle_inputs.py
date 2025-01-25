@@ -12,7 +12,7 @@ def get_color_mapping(df):
 def select_features_from_csv(df):
     enlarge_sidebar_widgets()
     write_sidebar_to_screen("Select Features", 22)
-    enlarge_selectbox()
+    #enlarge_selectbox()
     attribute_features = st.sidebar.multiselect("Choose the attribute features:", df.columns.tolist())
 
     outcome_feature = st.sidebar.selectbox("Choose the outcome feature:", ["Select Outcome"] + df.columns.tolist())
@@ -20,7 +20,7 @@ def select_features_from_csv(df):
 
 
 def select_task_option():
-    enlarge_selectbox()
+   # enlarge_selectbox()
     task_option = st.sidebar.selectbox("Choose a Task",
                                        ["Select Task", "Visualizations", "Prediction", "Data Imputation"])
     return task_option
@@ -55,7 +55,7 @@ def process_inputs(df, binning_df):
     # Update the check to ensure both attributes, outcome, task, graph method, and sorting method are selected before displaying the content
     if attribute_features and outcome_feature != "Select Outcome" and task_option != "Select Task":
         with col1:
-            enlarge_selectbox()
+           # enlarge_selectbox()
             graph_method = st.selectbox("Select Graph Method", ["", "Naive", "SeerCuts"],
                                         index=2 if not st.session_state.selected_graph else ["", "Naive",
                                                                                              "SeerCuts"].index(
@@ -68,7 +68,7 @@ def process_inputs(df, binning_df):
                 # display_graph(st.session_state.selected_graph, best_df, col)
 
         with col2:
-            enlarge_selectbox()
+           # enlarge_selectbox()
             sorting_method = st.selectbox("Select Sorting Method", ["", "Utility", "Semantic"],
                                           index=1 if not st.session_state.selected_sorting else ["", "Utility",
                                                                                                  "Semantic"].index(
