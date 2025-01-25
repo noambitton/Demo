@@ -1,6 +1,4 @@
-import streamlit as st
 from consts import *
-from graphs import *
 from handle_inputs import *
 from fonts import *
 
@@ -11,6 +9,7 @@ write_to_screen("SeerCuts: Find the best binning for your dataset", 40)
 enlarge_sidebar_text()
 
 st.sidebar.markdown('<div style="font-size: 30px; font-weight: bold;">Inputs <span style="font-size: 30px;">&#128221;</span></div>', unsafe_allow_html=True)
+st.session_state.clicked_point = False
 
 df = handle_file_upload()
 if df is not None:

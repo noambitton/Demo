@@ -1,19 +1,39 @@
 import time
 import plotly.express as px
 import pandas as pd
-import streamlit as st
 from streamlit_plotly_events import plotly_events
 from fonts import *
 
-if "clicked_point" not in st.session_state:
-    st.session_state.clicked_point = None
 
 
 def show_histogram(df, clicked_data):
-    # TODO: add here the real histograms
-    utility_values = df['Utility']
-    fig_hist = px.histogram(utility_values, nbins=5, title="Histogram")
-    st.plotly_chart(fig_hist)
+    st.session_state.clicked_point=True
+    # Display the clicked data
+    if clicked_data[0]['x']>0.5:
+    # Load your images (replace with your actual image paths or PIL images)
+        image_1 = "datasets/age_binning1.png"
+        image_2 = "datasets/BMI_binning1.png"
+        image_3 = "datasets/glucose_binning1.png"
+    else:
+        image_1 = "datasets/age_binning2.png"
+        image_2 = "datasets/BMI_binning2.png"
+        image_3 = "datasets/glucose_binning2.png"
+
+
+    # Create three columns
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.image(image_1, use_container_width=True, width=400)
+
+    with col2:
+        st.image(image_2, use_container_width=True, width=400)
+
+    with col3:
+        st.image(image_3, use_container_width=True, width=400)
+
+
+
 
 
 def plot_graph(df, title, delay, new_method_flag, color_mapping):
@@ -55,7 +75,7 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
     # Display clicked data if available
     if clicked_point:
         point = clicked_point[0]  # Access the first clicked point
-        write_to_screen(f"You clicked on: Utility = {point['x']}, Semantic = {point['y']}", 30)
+        # write_to_screen(f"You clicked on: Utility = {point['x']}, Semantic = {point['y']}", 30)
         show_histogram(df, clicked_point)
     # Display elapsed time
     elapsed_time = time.time() - start_time
@@ -81,17 +101,40 @@ def display_table(sort_order, best_df, col, color_mapping):
 
         sorted_binning_df['color'] = sorted_binning_df['ID'].map(color_mapping)
 
-        # Build the HTML for the table
+
         table_html = '<table style="width:100%; border-collapse: collapse;">'
         table_html += "<thead><tr><th>ID</th><th>Semantic</th><th>Utility</th></tr></thead><tbody>"
 
-        for _, row in sorted_binning_df.iterrows():
+        for idx, row in sorted_binning_df.iterrows():
             # Get the color for the current ID
             color = color_mapping.get(row['ID'], 'gray')  # Default to 'gray' if color not found
             # Apply the color to the row
-            table_html += f'<tr style="background-color:{color};"><td>{row["ID"]}</td><td>{row["Semantic"]:.2f}</td><td>{row["Utility"]:.2f}</td></tr>'
+            table_html += f'<tr style="background-color:{color};">'
+            table_html += f'<td>{row["ID"]}</td><td>{row["Semantic"]:.2f}</td><td>{row["Utility"]:.2f}</td></tr>'
 
         table_html += "</tbody></table>"
 
         # Display the table using st.markdown() with raw HTML
         st.markdown(table_html, unsafe_allow_html=True)
+
+        # Add download button
+
+        if st.session_state.clicked_point:
+
+            download_df = pd.DataFrame()
+
+            # Convert to CSV and provide download
+            csv = download_df.to_csv(index=False)
+            st.download_button(
+                label="Apply & Download",
+                data=csv,
+                file_name=f"applied_binning.csv",
+                mime="text/csv"
+            )
+
+
+
+
+
+
+
