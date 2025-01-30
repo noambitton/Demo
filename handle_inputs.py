@@ -43,25 +43,33 @@ def process_inputs(df):
     if 'selected_sorting' not in st.session_state:
         st.session_state.selected_sorting = ""
 
+
     attribute_features, outcome_feature = select_features_from_csv(df)
     task_option = select_task_option()
+    if task_option=="Visualizations":
+        best_binning_df_naive = vis_naive_df
+        best_binning_df_seercuts = vis_seercuts_df
+    if task_option=="Prediction":
+        best_binning_df_naive = pred_binning_df
+        best_binning_df_seercuts = pred_binning_df
     col = st.columns([2, 1])
     col1, col2 = col[0], col[1]
 
-    best_binning_df_naive = binning_df[(binning_df["Pareto"] == 1)]
-    best_binning_df_seercuts = binning_df[binning_df["Estimated"] == 1]
 
-    best_binning_df_naive['ID'] = best_binning_df_naive['ID'].astype(str)
-    best_binning_df_seercuts['ID'] = best_binning_df_seercuts['ID'].astype(str)
-    new_graph_method_flag = False
 
-    color_mapping_naive = get_color_mapping(best_binning_df_naive)
-    color_mapping_seercuts = get_color_mapping(best_binning_df_seercuts)
+
 
     # Update the check to ensure both attributes, outcome, task, graph method, and sorting method are selected before displaying the content
     if attribute_features and outcome_feature != "Select Outcome" and task_option != "Select Task":
+        best_binning_df_naive['ID'] = best_binning_df_naive['ID'].astype(str)
+        best_binning_df_seercuts['ID'] = best_binning_df_seercuts['ID'].astype(str)
+        new_graph_method_flag = False
+
+        color_mapping_naive = get_color_mapping(best_binning_df_naive)
+        color_mapping_seercuts = get_color_mapping(best_binning_df_seercuts)
         with col1:
            # enlarge_selectbox()
+
             graph_method = st.selectbox("Select Graph Method", ["", "Naive", "SeerCuts"],
                                         index=2 if not st.session_state.selected_graph else ["", "Naive",
                                                                                              "SeerCuts"].index(

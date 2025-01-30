@@ -11,12 +11,12 @@ def show_histogram(df, clicked_data):
     if clicked_data[0]['x']>0.8:
     # Load your images (replace with your actual image paths or PIL images)
         image_1 = "datasets/age_binning12.png"
-        image_2 = "datasets/BMI_binning1.png"
-        image_3 = "datasets/glucose_binning1.png"
+        image_2 = "datasets/BMI_binning12.png"
+        image_3 = "datasets/glucose_binning12.png"
     else:
-        image_1 = "datasets/age_binning2.png"
-        image_2 = "datasets/BMI_binning2.png"
-        image_3 = "datasets/glucose_binning2.png"
+        image_1 = "datasets/age_binning22.png"
+        image_2 = "datasets/BMI_binning22.png"
+        image_3 = "datasets/glucose_binning22.png"
 
 
     # Create three columns
