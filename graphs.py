@@ -7,11 +7,10 @@ from fonts import *
 
 
 def show_histogram(df, clicked_data):
-    st.session_state.clicked_point=True
     # Display the clicked data
     if clicked_data[0]['x']>0.5:
     # Load your images (replace with your actual image paths or PIL images)
-        image_1 = "datasets/age_binning1.png"
+        image_1 = "datasets/age_binning12.png"
         image_2 = "datasets/BMI_binning1.png"
         image_3 = "datasets/glucose_binning1.png"
     else:
@@ -58,7 +57,7 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
         y="Semantic",
         color="ID",
         color_discrete_map=color_mapping,
-        hover_data={"ID": False, "Utility": True, "Semantic": True}
+        hover_data={"ID": True, "Utility": True, "Semantic": True}
     )
 
     # Update marker size and layout
@@ -74,6 +73,8 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
 
     # Display clicked data if available
     if clicked_point:
+        st.session_state.clicked_point = True
+
         point = clicked_point[0]  # Access the first clicked point
         # write_to_screen(f"You clicked on: Utility = {point['x']}, Semantic = {point['y']}", 30)
         show_histogram(df, clicked_point)
@@ -110,8 +111,10 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
             best_df = best_binning_df_naive
             color_mapping = color_mapping_naive
         elif selected_method == "SeerCuts":
-            best_df = best_binning_df_naive
+            best_df = best_binning_df_seercuts  # Fixed incorrect assignment
             color_mapping = color_mapping_seercuts
+
+        # Sort based on selected criteria
         if sort_order == "Utility":
             sorted_binning_df = best_df.sort_values(by="Utility", ascending=False)
         elif sort_order == "Semantic":
@@ -119,28 +122,26 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
 
         sorted_binning_df['color'] = sorted_binning_df['ID'].map(color_mapping)
 
-
-        table_html = '<table style="width:100%; border-collapse: collapse;">'
+        # Generate the HTML table with scrolling
+        table_html = '<div style="max-height: 400px; overflow-y: auto;">'  # Scrolling container
+        table_html += '<table style="width:100%; border-collapse: collapse;">'
         table_html += "<thead><tr><th>ID</th><th>Semantic</th><th>Utility</th></tr></thead><tbody>"
 
         for idx, row in sorted_binning_df.iterrows():
-            # Get the color for the current ID
-            color = color_mapping.get(row['ID'], 'gray')  # Default to 'gray' if color not found
-            # Apply the color to the row
+            color = color_mapping.get(row['ID'], 'gray')  # Default to 'gray' if not found
             table_html += f'<tr style="background-color:{color};">'
             table_html += f'<td>{row["ID"]}</td><td>{row["Semantic"]:.2f}</td><td>{row["Utility"]:.2f}</td></tr>'
 
-        table_html += "</tbody></table>"
+        table_html += "</tbody></table></div>"  # Close the scrollable container
 
-        # Display the table using st.markdown() with raw HTML
+        # Display table with scrolling
         st.markdown(table_html, unsafe_allow_html=True)
-
-        # Add download button
+        st.markdown("<br>", unsafe_allow_html=True)  # Adds two line breaks
 
         if st.session_state.clicked_point:
             # Step 1: Show the Apply button only if it hasn't been clicked yet
             if st.session_state.show_apply:
-                st.button("Apply", key="apply_button", on_click=on_apply_click)  # Add unique key to prevent multiple clicks
+                st.button("Apply & Inspect", key="apply_button", on_click=on_apply_click)  # Add unique key to prevent multiple clicks
 
             # Step 2: If Apply is clicked, hide it and show other buttons
             else:
