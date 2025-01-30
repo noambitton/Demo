@@ -85,10 +85,22 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
 def display_graph(selected_method, best_binning_df_naive, best_binning_df_seercuts, col, new_method_flag, color_mapping_naive, color_mapping_seercuts):
     col1, col2 = col[0], col[1]
     with col1:
-        if selected_method == "Naive":
-            plot_graph(best_binning_df_naive, "Naive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive)
-        elif selected_method == "SeerCuts":
-            plot_graph(best_binning_df_seercuts, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts)
+        if not st.session_state.show_binned_table:
+            if selected_method == "Naive":
+                plot_graph(best_binning_df_naive, "Naive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive)
+            elif selected_method == "SeerCuts":
+                plot_graph(best_binning_df_seercuts, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts)
+        else:
+            df=pd.read_csv("datasets/diabetes_binned.csv")
+            st.dataframe(df)
+# Define callback functions
+def on_apply_click():
+    st.session_state.show_apply = False
+    st.session_state.show_binned_table = True
+
+def on_return_click():
+    st.session_state.show_apply = True
+    st.session_state.show_binned_table = False
 
 
 def display_table(sort_order, selected_method, best_binning_df_naive, best_binning_df_seercuts, col, color_mapping_naive, color_mapping_seercuts):
@@ -126,17 +138,17 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
         # Add download button
 
         if st.session_state.clicked_point:
+            # Step 1: Show the Apply button only if it hasn't been clicked yet
+            if st.session_state.show_apply:
+                st.button("Apply", key="apply_button", on_click=on_apply_click)  # Add unique key to prevent multiple clicks
 
-            download_df = pd.DataFrame()
+            # Step 2: If Apply is clicked, hide it and show other buttons
+            else:
+                col3, col4 = st.columns(2)
+                with col3:
+                    st.button("Return", key="return_button", on_click=on_return_click)
 
-            # Convert to CSV and provide download
-            csv = download_df.to_csv(index=False)
-            st.download_button(
-                label="Apply & Download",
-                data=csv,
-                file_name=f"applied_binning.csv",
-                mime="text/csv"
-            )
+
 
 
 

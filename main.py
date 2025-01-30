@@ -9,8 +9,12 @@ write_to_screen("SeerCuts: Find the best binning for your dataset", 40)
 enlarge_sidebar_text()
 
 st.sidebar.markdown('<div style="font-size: 30px; font-weight: bold;">Inputs <span style="font-size: 30px;">&#128221;</span></div>', unsafe_allow_html=True)
-st.session_state.clicked_point = False
-
+if 'clicked_point' not in st.session_state:
+    st.session_state.clicked_point = False
+if 'show_apply' not in st.session_state:
+    st.session_state.show_apply = True
+if 'show_binned_table' not in st.session_state:
+    st.session_state.show_binned_table = False
 df = handle_file_upload()
 if df is not None:
     process_inputs(df)
