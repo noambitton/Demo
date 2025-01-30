@@ -8,7 +8,7 @@ from fonts import *
 
 def show_histogram(df, clicked_data):
     # Display the clicked data
-    if clicked_data[0]['x']>0.5:
+    if clicked_data[0]['x']>0.8:
     # Load your images (replace with your actual image paths or PIL images)
         image_1 = "datasets/age_binning12.png"
         image_2 = "datasets/BMI_binning1.png"
@@ -67,7 +67,11 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
         xaxis_title="Utility",
         yaxis_title="Semantic",
         font=dict(size=16),
-        showlegend=False
+        showlegend=False,
+        xaxis=dict(
+            range=[0, 1.1],  # Set the range from 0 to 100
+            dtick=0.2  # Set the interval between ticks to 10
+        )
     )
     clicked_point = plotly_events(fig, click_event=True, select_event=False)
 
