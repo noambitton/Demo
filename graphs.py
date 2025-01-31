@@ -4,7 +4,7 @@ import pandas as pd
 from streamlit_plotly_events import plotly_events
 from fonts import *
 
-COLOR_ON_COLUMN = 'Estimated' #'ID'  # Column to map the color on
+COLOR_ON_COLUMN = "Estimated" #'ID'  # Column to map the color on
 
 def show_histogram(df, clicked_data):
     # Display the clicked data
@@ -55,7 +55,7 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
         df,
         x="Utility",
         y="Semantic",
-        color="ID",
+        color=COLOR_ON_COLUMN,
         color_discrete_map=color_mapping,
         hover_data={"ID": True, "Utility": True, "Semantic": True}
     )
@@ -66,7 +66,7 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
         title=title,
         xaxis_title="Utility",
         yaxis_title="Semantic",
-        font=dict(size=16),
+        font=dict(size=12),
         showlegend=False,
         xaxis=dict(
             range=[0, 1.1],  # Set the range from 0 to 100
@@ -126,6 +126,8 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
 
         # Add color column based on the color mapping
         sorted_binning_df['color'] = sorted_binning_df[COLOR_ON_COLUMN].map(color_mapping)
+        #print(color_mapping)
+        table_color_mapping = {'1': '#11c739', '0': '#cce8f7'}
 
         # Generate the HTML table with scrolling
         table_html = '<div style="max-height: 400px; overflow-y: auto;">'  # Scrolling container
@@ -133,7 +135,7 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
         table_html += "<thead><tr><th>ID</th><th>Semantic</th><th>Utility</th></tr></thead><tbody>"
 
         for idx, row in sorted_binning_df.iterrows():
-            color = color_mapping.get(row[COLOR_ON_COLUMN], 'white')  # Default to 'gray' if not found
+            color = table_color_mapping.get(row[COLOR_ON_COLUMN], 'white')  # Default to 'gray' if not found
             #color = 'gray'
             table_html += f'<tr style="background-color:{color};">'
             table_html += f'<td>{row["ID"]}</td><td>{row["Semantic"]:.2f}</td><td>{row["Utility"]:.2f}</td></tr>'
