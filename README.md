@@ -22,8 +22,7 @@ Key features:
 ### Setup
 1. Clone the repository:
 ```bash
-git clone [https://github.com/yourusername/seercuts.git](https://github.com/noambitton/Demo.git)
-cd seercuts
+git clone https://github.com/noambitton/Demo.git
 ```
 
 2. Install dependencies:
