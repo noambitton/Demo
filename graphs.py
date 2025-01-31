@@ -4,7 +4,7 @@ import pandas as pd
 from streamlit_plotly_events import plotly_events
 from fonts import *
 
-
+COLOR_ON_COLUMN = 'Estimated' #'ID'  # Column to map the color on
 
 def show_histogram(df, clicked_data):
     # Display the clicked data
@@ -124,7 +124,8 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
         elif sort_order == "Semantic":
             sorted_binning_df = best_df.sort_values(by="Semantic", ascending=False)
 
-        sorted_binning_df['color'] = sorted_binning_df['ID'].map(color_mapping)
+        # Add color column based on the color mapping
+        sorted_binning_df['color'] = sorted_binning_df[COLOR_ON_COLUMN].map(color_mapping)
 
         # Generate the HTML table with scrolling
         table_html = '<div style="max-height: 400px; overflow-y: auto;">'  # Scrolling container
@@ -132,7 +133,8 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
         table_html += "<thead><tr><th>ID</th><th>Semantic</th><th>Utility</th></tr></thead><tbody>"
 
         for idx, row in sorted_binning_df.iterrows():
-            color = color_mapping.get(row['ID'], 'gray')  # Default to 'gray' if not found
+            color = color_mapping.get(row[COLOR_ON_COLUMN], 'white')  # Default to 'gray' if not found
+            #color = 'gray'
             table_html += f'<tr style="background-color:{color};">'
             table_html += f'<td>{row["ID"]}</td><td>{row["Semantic"]:.2f}</td><td>{row["Utility"]:.2f}</td></tr>'
 

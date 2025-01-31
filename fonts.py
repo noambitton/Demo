@@ -60,7 +60,7 @@ def enlarge_sidebar_text():
         <style>
             /* Increase font size for the sidebar header */
             .sidebar .sidebar-content {
-                font-size: 30px !important;
+                font-size: 20px !important;
                 font-weight: bold;
             }
         </style>

@@ -4,13 +4,13 @@ from graphs import *
 from consts import *
 
 def get_color_mapping(df):
-    unique_options = df["ID"].astype(str).unique()
+    unique_options = df[COLOR_ON_COLUMN].astype(str).unique()
     colors = px.colors.qualitative.Plotly
     return {option: colors[i % len(colors)] for i, option in enumerate(unique_options)}
 
 
 def select_features_from_csv(df):
-    enlarge_sidebar_widgets()
+    #enlarge_sidebar_widgets()
     write_sidebar_to_screen("Select Features", 22)
     #enlarge_selectbox()
     attribute_features = st.sidebar.multiselect("Choose the attribute features:", df.columns.tolist())
@@ -27,7 +27,7 @@ def select_task_option():
 
 
 def handle_file_upload():
-    enlarge_file_uploader_label()
+    #enlarge_file_uploader_label()
     uploaded = st.sidebar.file_uploader("#### Upload a dataset", type=["csv"])
     if uploaded:
         return pd.read_csv(uploaded)
