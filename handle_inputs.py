@@ -70,8 +70,8 @@ def process_inputs(df):
         with col1:
            # enlarge_selectbox()
 
-            graph_method = st.selectbox("Select Graph Method", ["", "Naive", "SeerCuts"],
-                                        index=2 if not st.session_state.selected_graph else ["", "Naive",
+            graph_method = st.selectbox("Select Graph Method", ["", "Exhaustive", "SeerCuts"],
+                                        index=2 if not st.session_state.selected_graph else ["", "Exhaustive",
                                                                                              "SeerCuts"].index(
                                             st.session_state.selected_graph))
 

@@ -3,6 +3,7 @@ from handle_inputs import *
 from fonts import *
 
 # streamlit run C:/technion/semester7/Demo/main.py
+# streamlit run main.py --server.enableXsrfProtection false
 st.set_page_config(layout="wide", page_title="SeerCuts", page_icon=":pencil2:")
 write_to_screen("SeerCuts: Find the best binning for your dataset", 40)
 

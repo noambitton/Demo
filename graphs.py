@@ -10,13 +10,13 @@ def show_histogram(df, clicked_data):
     # Display the clicked data
     if clicked_data[0]['x']>0.8:
     # Load your images (replace with your actual image paths or PIL images)
-        image_1 = "datasets/age_binning12.png"
-        image_2 = "datasets/BMI_binning12.png"
-        image_3 = "datasets/glucose_binning12.png"
+        image_1 = "data/age_binning12.png"
+        image_2 = "data/BMI_binning12.png"
+        image_3 = "data/glucose_binning12.png"
     else:
-        image_1 = "datasets/age_binning22.png"
-        image_2 = "datasets/BMI_binning22.png"
-        image_3 = "datasets/glucose_binning22.png"
+        image_1 = "data/age_binning22.png"
+        image_2 = "data/BMI_binning22.png"
+        image_3 = "data/glucose_binning22.png"
 
 
     # Create three columns
@@ -91,12 +91,12 @@ def display_graph(selected_method, best_binning_df_naive, best_binning_df_seercu
     col1, col2 = col[0], col[1]
     with col1:
         if not st.session_state.show_binned_table:
-            if selected_method == "Naive":
-                plot_graph(best_binning_df_naive, "Naive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive)
+            if selected_method == "Exhaustive":
+                plot_graph(best_binning_df_naive, "Exhaustive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive)
             elif selected_method == "SeerCuts":
                 plot_graph(best_binning_df_seercuts, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts)
         else:
-            df=pd.read_csv("datasets/diabetes_binned.csv")
+            df=pd.read_csv("data/diabetes_binned.csv")
             st.dataframe(df)
 # Define callback functions
 def on_apply_click():
@@ -111,7 +111,7 @@ def on_return_click():
 def display_table(sort_order, selected_method, best_binning_df_naive, best_binning_df_seercuts, col, color_mapping_naive, color_mapping_seercuts):
     col1, col2 = col[0], col[1]
     with col2:
-        if selected_method == "Naive":
+        if selected_method == "Exhaustive":
             best_df = best_binning_df_naive
             color_mapping = color_mapping_naive
         elif selected_method == "SeerCuts":
