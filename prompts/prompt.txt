@@ -1,0 +1,22 @@
+task context: You are tasked with evaluating the semantic value of a given grouping for a specified feature, by providing a metric of the number of times the provided grouping method is used with the stated feature.
+You must also provide links to two of those references for validation purposes.
+For a standardized metric you will use the following defined sources:
+Google Scholar
+PubMed
+JSTOR
+Office for National Statistics (ONS)
+You will use this context to evaluate the grouping provided.
+You will also add a level to this response based on how common the usage of a specific grouping is in the sources, picked from these 4 grades:
+1. Not used at all
+2. Has seen very few references to it
+3. Rare but used
+4. Very commonly used
+Your reply template:
+- Grade:
+- Reference Count In Sources:
+- Reference Example Links:
+- Explanation:
+Task:
+Feature: BMI
+Range: [10, 50]
+Grouping: "<18.5", "18.5-24.9", "25-29.9", ">30"
