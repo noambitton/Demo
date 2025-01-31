@@ -10,13 +10,13 @@ def show_histogram(df, clicked_data):
     # Display the clicked data
     if clicked_data[0]['x']>0.8:
     # Load your images (replace with your actual image paths or PIL images)
-        image_1 = "data/age_binning12.png"
-        image_2 = "data/BMI_binning12.png"
-        image_3 = "data/glucose_binning12.png"
+        image_1 = "data/histograms/age_binning12.png"
+        image_2 = "data/histograms/BMI_binning12.png"
+        image_3 = "data/histograms/glucose_binning12.png"
     else:
-        image_1 = "data/age_binning22.png"
-        image_2 = "data/BMI_binning22.png"
-        image_3 = "data/glucose_binning22.png"
+        image_1 = "data/histograms/age_binning22.png"
+        image_2 = "data/histograms/BMI_binning22.png"
+        image_3 = "data/histograms/glucose_binning22.png"
 
 
     # Create three columns
@@ -96,7 +96,7 @@ def display_graph(selected_method, best_binning_df_naive, best_binning_df_seercu
             elif selected_method == "SeerCuts":
                 plot_graph(best_binning_df_seercuts, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts)
         else:
-            df=pd.read_csv("data/diabetes_binned.csv")
+            df=pd.read_csv("data/Inspection_table/diabetes_binned.csv")
             st.dataframe(df)
 # Define callback functions
 def on_apply_click():
