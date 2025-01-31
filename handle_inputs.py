@@ -6,12 +6,13 @@ from consts import *
 def get_color_mapping(df):
     unique_options = df[COLOR_ON_COLUMN].astype(str).unique()
     colors = px.colors.qualitative.Plotly
+    return {'1': '#11c739', '0': '#a1c0dc'}
     return {option: colors[i % len(colors)] for i, option in enumerate(unique_options)}
 
 
 def select_features_from_csv(df):
     #enlarge_sidebar_widgets()
-    write_sidebar_to_screen("Select Features", 22)
+    write_sidebar_to_screen("Select Features", 18)
     #enlarge_selectbox()
     attribute_features = st.sidebar.multiselect("Choose the attribute features:", df.columns.tolist())
 

@@ -9,7 +9,7 @@ write_to_screen("SeerCuts: Find the best binning for your dataset", 20)
 
 #enlarge_sidebar_text()
 
-st.sidebar.markdown('<div style="font-size: 20px; font-weight: bold;">Inputs <span style="font-size: 20px;">&#128221;</span></div>', unsafe_allow_html=True)
+st.sidebar.markdown('<div style="font-size: 18px; font-weight: bold;">Inputs <span style="font-size: 18px;">&#128221;</span></div>', unsafe_allow_html=True)
 if 'clicked_point' not in st.session_state:
     st.session_state.clicked_point = False
 if 'show_apply' not in st.session_state:

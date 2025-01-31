@@ -26,6 +26,9 @@ vis_naive_list,vis_seercuts_list=naive_seercuts_split(vis_binning_options,task='
 pred_naive_list,pred_seercuts_list=naive_seercuts_split(pred_binning_options,task='pred')
 
 vis_naive_df=pd.DataFrame(vis_naive_list)
+vis_naive_df['Estimated']=vis_naive_df['Estimated'].astype(str)
 vis_seercuts_df=pd.DataFrame(vis_seercuts_list)
+vis_seercuts_df['Estimated']=vis_seercuts_df['Estimated'].astype(str)
 pred_binning_df= pd.DataFrame(pred_seercuts_list)
+pred_binning_df['Estimated']=pred_binning_df['Estimated'].astype(str)
 # binning_df = pd.DataFrame(binning_options)
