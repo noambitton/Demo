@@ -3,39 +3,46 @@ import plotly.express as px
 import pandas as pd
 from streamlit_plotly_events import plotly_events
 from fonts import *
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import streamlit as st
 
 COLOR_ON_COLUMN = "Estimated" #'ID'  # Column to map the color on
 
-def show_histogram(df, clicked_data):
-    # Display the clicked data
-    if clicked_data[0]['x']>0.8:
-    # Load your images (replace with your actual image paths or PIL images)
-        image_1 = "data/histograms/age_binning12.png"
-        image_2 = "data/histograms/BMI_binning12.png"
-        image_3 = "data/histograms/glucose_binning12.png"
-    else:
-        image_1 = "data/histograms/age_binning22.png"
-        image_2 = "data/histograms/BMI_binning22.png"
-        image_3 = "data/histograms/glucose_binning22.png"
+
+def show_histogram(matched_row, df, attribute_features):
+    # Create columns for displaying histograms
+    cols = st.columns(len(attribute_features))
+
+    for i, attribute in enumerate(attribute_features):
+        if attribute not in df.columns:
+            st.write(f"Attribute '{attribute}' not found in dataset.")
+            continue
+
+        if not pd.api.types.is_numeric_dtype(df[attribute]):
+            continue
+
+        partition_edges = matched_row.iloc[0]["Partition"][i]
+        bins = np.array(partition_edges)
+        attribute_data = df[attribute].dropna()
+        bin_counts, bin_edges = np.histogram(attribute_data, bins=bins)
+        bin_labels = [f"[{bin_edges[i]}, {bin_edges[i + 1]})" for i in range(len(bin_edges) - 1)]
+
+        # Plot histogram
+        plt.figure(figsize=(5, 3))
+        sns.barplot(x=bin_labels, y=bin_counts, color="blue")
+        plt.xlabel(attribute)
+        plt.ylabel("Count")
+        plt.title(f"Histogram of {attribute}")
+        plt.xticks(rotation=45)
+
+        # Show the histogram in the respective column
+        with cols[i]:
+            st.pyplot(plt)
 
 
-    # Create three columns
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.image(image_1, use_container_width=True, width=400)
-
-    with col2:
-        st.image(image_2, use_container_width=True, width=400)
-
-    with col3:
-        st.image(image_3, use_container_width=True, width=400)
-
-
-
-
-
-def plot_graph(df, title, delay, new_method_flag, color_mapping):
+def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, attribute_features):
     start_time = time.time()
 
     if new_method_flag:
@@ -52,7 +59,7 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
         status_text.text("")
 
     fig = px.scatter(
-        df,
+        binning_df,
         x="Utility",
         y="Semantic",
         color=COLOR_ON_COLUMN,
@@ -75,33 +82,48 @@ def plot_graph(df, title, delay, new_method_flag, color_mapping):
     )
     clicked_point = plotly_events(fig, click_event=True, select_event=False)
 
-    # Display clicked data if available
     if clicked_point:
         st.session_state.clicked_point = True
+        point = clicked_point[0]  # First clicked point
+        utility = point["x"]
+        semantic = point["y"]
 
-        point = clicked_point[0]  # Access the first clicked point
-        # write_to_screen(f"You clicked on: Utility = {point['x']}, Semantic = {point['y']}", 30)
-        show_histogram(df, clicked_point)
+        # Find the corresponding ID in the dataframe
+        matched_row = binning_df[(binning_df["Utility"] == utility) & (binning_df["Semantic"] == semantic)]
+
+        if not matched_row.empty:
+            show_histogram(matched_row, df, attribute_features)
+
+    # # Display clicked data if available
+    # if clicked_point:
+    #     st.session_state.clicked_point = True
+    #
+    #     point = clicked_point[0]  # Access the first clicked point
+    #     # write_to_screen(f"You clicked on: Utility = {point['x']}, Semantic = {point['y']}", 30)
+    #     show_histogram(df, clicked_point)
     # Display elapsed time
     elapsed_time = time.time() - start_time
     write_to_screen(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds", 22)
 
 
-def display_graph(selected_method, best_binning_df_naive, best_binning_df_seercuts, col, new_method_flag, color_mapping_naive, color_mapping_seercuts):
+def display_graph(selected_method, best_binning_df_naive, best_binning_df_seercuts, df, col, new_method_flag, color_mapping_naive, color_mapping_seercuts, attribute_features):
     col1, col2 = col[0], col[1]
     with col1:
         if not st.session_state.show_binned_table:
             if selected_method == "Exhaustive":
-                plot_graph(best_binning_df_naive, "Exhaustive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive)
+                plot_graph(best_binning_df_naive, df, "Exhaustive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive, attribute_features)
             elif selected_method == "SeerCuts":
-                plot_graph(best_binning_df_seercuts, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts)
+                plot_graph(best_binning_df_seercuts, df, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts, attribute_features)
         else:
             df=pd.read_csv("data/Inspection_table/diabetes_binned.csv")
             st.dataframe(df)
+
+
 # Define callback functions
 def on_apply_click():
     st.session_state.show_apply = False
     st.session_state.show_binned_table = True
+
 
 def on_return_click():
     st.session_state.show_apply = True

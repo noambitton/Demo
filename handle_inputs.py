@@ -3,6 +3,7 @@ import pandas as pd
 from graphs import *
 from consts import *
 
+
 def get_color_mapping(df):
     unique_options = df[COLOR_ON_COLUMN].astype(str).unique()
     colors = px.colors.qualitative.Plotly
@@ -44,9 +45,9 @@ def process_inputs(df):
     if 'selected_sorting' not in st.session_state:
         st.session_state.selected_sorting = ""
 
-
     attribute_features, outcome_feature = select_features_from_csv(df)
     task_option = select_task_option()
+
     if task_option=="Visualizations":
         best_binning_df_naive = vis_naive_df
         best_binning_df_seercuts = vis_seercuts_df
@@ -55,10 +56,6 @@ def process_inputs(df):
         best_binning_df_seercuts = pred_binning_df
     col = st.columns([2, 1])
     col1, col2 = col[0], col[1]
-
-
-
-
 
     # Update the check to ensure both attributes, outcome, task, graph method, and sorting method are selected before displaying the content
     if attribute_features and outcome_feature != "Select Outcome" and task_option != "Select Task":
@@ -69,8 +66,6 @@ def process_inputs(df):
         color_mapping_naive = get_color_mapping(best_binning_df_naive)
         color_mapping_seercuts = get_color_mapping(best_binning_df_seercuts)
         with col1:
-           # enlarge_selectbox()
-
             graph_method = st.selectbox("Select Graph Method", ["", "Exhaustive", "SeerCuts"],
                                         index=2 if not st.session_state.selected_graph else ["", "Exhaustive",
                                                                                              "SeerCuts"].index(
@@ -97,7 +92,7 @@ def process_inputs(df):
         # Now only show the graph and table if both are selected
         if graph_method and sorting_method:
             if st.session_state.selected_graph:
-                display_graph(st.session_state.selected_graph, best_binning_df_naive, best_binning_df_seercuts, col, new_graph_method_flag, color_mapping_naive, color_mapping_seercuts)
+                display_graph(st.session_state.selected_graph, best_binning_df_naive, best_binning_df_seercuts, df, col, new_graph_method_flag, color_mapping_naive, color_mapping_seercuts, attribute_features)
 
             if st.session_state.selected_sorting:
                 display_table(st.session_state.selected_sorting, graph_method, best_binning_df_naive, best_binning_df_seercuts, col, color_mapping_naive, color_mapping_seercuts)
