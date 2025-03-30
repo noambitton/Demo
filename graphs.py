@@ -110,7 +110,7 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
     #     show_histogram(df, clicked_point)
     # Display elapsed time
     elapsed_time = time.time() - start_time
-    write_to_screen(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds", 22)
+    #write_to_screen(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds", 22)
 
 
 def display_graph(selected_method, best_binning_df_naive, best_binning_df_seercuts, df, col, new_method_flag, color_mapping_naive, color_mapping_seercuts, attribute_features):
@@ -175,6 +175,13 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
         st.markdown(table_html, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)  # Adds two line breaks
 
+        if selected_method == "Exhaustive":
+            #write_to_screen(f"We explored 72 out of 22,192 candidates and found the best partitions in 7.41 seconds", 18)
+            write_to_screen(f"We explored 146 out of 146 candidates and found the best partitions in 11.45 seconds", 18)
+        else:
+            write_to_screen(f"We explored 72 out of 22,192 candidates and found the best partitions in 7.41 seconds", 18)
+            #write_to_screen(f"We explored 28 out of 146 candidates and found the best partitions in 2.32 seconds", 18)
+        
         if st.session_state.clicked_point:
             # Step 1: Show the Apply button only if it hasn't been clicked yet
             if st.session_state.show_apply:
