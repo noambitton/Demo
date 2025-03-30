@@ -64,7 +64,8 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
         y="Semantic",
         color=COLOR_ON_COLUMN,
         color_discrete_map=color_mapping,
-        hover_data={"ID": True, "Utility": True, "Semantic": True}
+        hover_data={"ID": True, "Utility": True, "Semantic": True},
+        labels = {"Estimated": "Candidate Partition"},
     )
 
     # Update marker size and layout
@@ -74,12 +75,18 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
         xaxis_title="Utility",
         yaxis_title="Semantic",
         font=dict(size=12),
-        showlegend=False,
+        showlegend=True,
         xaxis=dict(
             range=[0, 1.1],  # Set the range from 0 to 100
             dtick=0.2  # Set the interval between ticks to 10
         )
     )
+    legend_newnames = {'1':'Pareto', '0': 'Explored'}
+    fig.for_each_trace(lambda t: t.update(name = legend_newnames[t.name],
+                                      legendgroup = legend_newnames[t.name],
+                                      hovertemplate = t.hovertemplate.replace(t.name, legend_newnames[t.name])
+                                     )
+                  )
     clicked_point = plotly_events(fig, click_event=True, select_event=False)
 
     if clicked_point:
