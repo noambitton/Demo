@@ -1,3 +1,8 @@
+# and enlarge the title to visually look as big as the “Utility” label of the scatter plot
+# For the graphed histograms, please make the x and y-axis tick font bigger.
+# Ideally, the same size as the x and y-axis tick font of the scatter plot
+
+
 import time
 import plotly.express as px
 import pandas as pd
@@ -11,7 +16,7 @@ import streamlit as st
 COLOR_ON_COLUMN = "Estimated" #'ID'  # Column to map the color on
 
 
-def show_histogram(matched_row, df, attribute_features):
+def show_histogram(matched_row, df, attribute_features, green_flag):
     # Create columns for displaying histograms
     cols = st.columns(len(attribute_features))
 
@@ -31,11 +36,16 @@ def show_histogram(matched_row, df, attribute_features):
 
         # Plot histogram
         plt.figure(figsize=(5, 3))
-        sns.barplot(x=bin_labels, y=bin_counts, color="blue")
-        plt.xlabel(attribute)
+        # Plot histogram with matching colors
+        if green_flag:
+            hist_color = "#11c739"
+        else:
+            hist_color = "#cce8f7"
+        sns.barplot(x=bin_labels, y=bin_counts, color=hist_color)
         plt.ylabel("Count")
-        plt.title(f"Histogram of {attribute}")
+        plt.title(f"{attribute}", fontsize=12)
         plt.xticks(rotation=45)
+        plt.tick_params(axis='both', which='major', labelsize=16)
 
         # Show the histogram in the respective column
         with cols[i]:
@@ -65,13 +75,16 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
         color=COLOR_ON_COLUMN,
         color_discrete_map=color_mapping,
         hover_data={"ID": True, "Utility": True, "Semantic": True},
-        labels = {"Estimated": "Candidate Partition"},
+        labels={"Estimated": "Candidate Partition"},
     )
 
     # Update marker size and layout
     fig.update_traces(marker=dict(size=12))
     fig.update_layout(
         title=title,
+        title_font=dict(size=18),
+        xaxis_title_font=dict(size=12),
+        yaxis_title_font=dict(size=12),
         xaxis_title="Utility",
         yaxis_title="Semantic",
         font=dict(size=12),
@@ -81,6 +94,7 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
             dtick=0.2  # Set the interval between ticks to 10
         )
     )
+
     legend_newnames = {'1':'Pareto', '0': 'Explored'}
     fig.for_each_trace(lambda t: t.update(name = legend_newnames[t.name],
                                       legendgroup = legend_newnames[t.name],
@@ -99,16 +113,11 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
         matched_row = binning_df[(binning_df["Utility"] == utility) & (binning_df["Semantic"] == semantic)]
 
         if not matched_row.empty:
-            show_histogram(matched_row, df, attribute_features)
+            green_flag = color_mapping.get(str(matched_row.iloc[0][COLOR_ON_COLUMN]),
+                                           '') == "#11c739"  # Green color hex
 
-    # # Display clicked data if available
-    # if clicked_point:
-    #     st.session_state.clicked_point = True
-    #
-    #     point = clicked_point[0]  # Access the first clicked point
-    #     # write_to_screen(f"You clicked on: Utility = {point['x']}, Semantic = {point['y']}", 30)
-    #     show_histogram(df, clicked_point)
-    # Display elapsed time
+            show_histogram(matched_row, df, attribute_features, green_flag)
+
     elapsed_time = time.time() - start_time
     #write_to_screen(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds", 22)
 
