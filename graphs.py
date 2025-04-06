@@ -14,42 +14,70 @@ import numpy as np
 import streamlit as st
 
 COLOR_ON_COLUMN = "Estimated" #'ID'  # Column to map the color on
+FONT_DICT = {
+    'size': 16,
+    'family': 'sans-serif',  # or 'serif', 'monospace', etc.
+    'weight': 'normal',      # can be 'bold', 'light', etc.
+    'style': 'normal'            # can be 'italic', 'oblique'
+}
 
 
 def show_histogram(matched_row, df, attribute_features, green_flag):
-    # Create columns for displaying histograms
-    cols = st.columns(len(attribute_features))
+    attributes_per_row = 3
+    font_size = 16
 
-    for i, attribute in enumerate(attribute_features):
-        if attribute not in df.columns:
-            st.write(f"Attribute '{attribute}' not found in dataset.")
-            continue
+    for i in range(0, len(attribute_features), attributes_per_row):
+        chunk = attribute_features[i:i + attributes_per_row]
+        cols = st.columns(attributes_per_row)
 
-        if not pd.api.types.is_numeric_dtype(df[attribute]):
-            continue
+        for j, attribute in enumerate(chunk):
+            with cols[j]:
+                if attribute not in df.columns:
+                    st.warning(f"'{attribute}' not in DataFrame.")
+                    continue
 
-        partition_edges = matched_row.iloc[0]["Partition"][i]
-        bins = np.array(partition_edges)
-        attribute_data = df[attribute].dropna()
-        bin_counts, bin_edges = np.histogram(attribute_data, bins=bins)
-        bin_labels = [f"[{bin_edges[i]}, {bin_edges[i + 1]})" for i in range(len(bin_edges) - 1)]
+                if not pd.api.types.is_numeric_dtype(df[attribute]):
+                    st.warning(f"'{attribute}' is not numeric.")
+                    continue
 
-        # Plot histogram
-        plt.figure(figsize=(5, 3))
-        # Plot histogram with matching colors
-        if green_flag:
-            hist_color = "#11c739"
-        else:
-            hist_color = "#cce8f7"
-        sns.barplot(x=bin_labels, y=bin_counts, color=hist_color)
-        plt.ylabel("Count")
-        plt.title(f"{attribute}", fontsize=12)
-        plt.xticks(rotation=45)
-        plt.tick_params(axis='both', which='major', labelsize=16)
+                try:
+                    partition_list = matched_row.iloc[0]["Partition"]
+                    # TODO: When partition won't be hardcoded- add this warning and change pos_in_partition_list to
+                    #  be only i+j
+                    #
+                    #  if i + j >= len(partition_list):
+                    #     st.warning(f"Not enough partition entries for '{attribute}'")
+                    #     continue
+                    pos_in_partition_list = (i+j) % 3
+                    partition_edges = partition_list[pos_in_partition_list]
+                    if not partition_edges or len(partition_edges) < 2:
+                        st.warning(f"No valid bins for '{attribute}'")
+                        continue
 
-        # Show the histogram in the respective column
-        with cols[i]:
-            st.pyplot(plt)
+                    bins = np.array(partition_edges)
+                    attribute_data = df[attribute].dropna()
+                    bin_counts, bin_edges = np.histogram(attribute_data, bins=bins)
+                    bin_labels = [f"[{bin_edges[k]:.2f}, {bin_edges[k + 1]:.2f})"
+                                  for k in range(len(bin_edges) - 1)]
+
+                    fig, ax = plt.subplots(figsize=(4, 3))
+                    if green_flag:
+                        hist_color = "#11c739"
+                    else:
+                        hist_color = "#cce8f7"
+                    ax.bar(bin_labels, bin_counts, color=hist_color)
+
+                    ax.set_title(attribute, FONT_DICT)
+                    ax.set_ylabel("Count", fontsize=font_size)
+                    ax.set_xlabel("Bins", fontsize=font_size)
+                    ax.tick_params(axis='both', which='major', labelsize=font_size)
+                    ax.set_xticks(np.arange(len(bin_labels)))
+                    ax.set_xticklabels(bin_labels, rotation=45, ha='right')
+
+                    st.pyplot(fig)
+
+                except Exception as e:
+                    st.error(f"Error processing '{attribute}': {str(e)}")
 
 
 def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, attribute_features):
@@ -83,8 +111,8 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
     fig.update_layout(
         title=title,
         title_font=dict(size=18),
-        xaxis_title_font=dict(size=12),
-        yaxis_title_font=dict(size=12),
+        xaxis_title_font=FONT_DICT,
+        yaxis_title_font=FONT_DICT,
         xaxis_title="Utility",
         yaxis_title="Semantic",
         font=dict(size=12),
