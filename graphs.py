@@ -16,9 +16,9 @@ import streamlit as st
 COLOR_ON_COLUMN = "Estimated" #'ID'  # Column to map the color on
 FONT_DICT = {
     'size': 16,
-    'family': 'sans-serif',  # or 'serif', 'monospace', etc.
-    'weight': 'normal',      # can be 'bold', 'light', etc.
-    'style': 'normal'            # can be 'italic', 'oblique'
+    'family': 'sans-serif',
+    'weight': 'normal',
+    'style': 'normal'
 }
 
 
