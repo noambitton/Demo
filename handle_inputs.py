@@ -27,7 +27,7 @@ def select_features_from_csv(dataset_json):
 def select_task_option():
    # enlarge_selectbox()
     task_option = st.sidebar.selectbox("Choose a Task",
-                                       ["Select Task", "Visualizations", "Prediction", ]) #"Data Imputation"
+                                       ["Select Task", "Visualizations", "Modeling", ]) #"Data Imputation"
     return task_option
 
 
@@ -66,9 +66,10 @@ def process_inputs(df, dataset_json):
     if task_option=="Visualizations":
         best_binning_df_naive = vis_naive_df
         best_binning_df_seercuts = vis_seercuts_df
-    if task_option=="Prediction":
+    if task_option=="Modeling":
         best_binning_df_naive = pred_binning_df
         best_binning_df_seercuts = pred_binning_df
+    
     col = st.columns([2, 1])
     col1, col2 = col[0], col[1]
 
