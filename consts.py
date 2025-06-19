@@ -5,10 +5,10 @@ import sys
 
 PROJECT_DIR = os.getcwd()
 
-with open(os.path.join(PROJECT_DIR, "data", "outputs", "Age_spearmanr_gpt_distance.json"), "r") as f:
+with open(os.path.join(PROJECT_DIR, "testresults", "Age_spearmanr_gpt_distance.json"), "r") as f:
     vis_binning_options = json.load(f)
 
-with open(os.path.join(PROJECT_DIR, "data", "outputs", "modeling_gpt_distance.json"), "r") as f:
+with open(os.path.join(PROJECT_DIR, "testresults", "modeling_gpt_distance.json"), "r") as f:
     pred_binning_options = json.load(f)
 
 def naive_seercuts_split(binning_options,task):

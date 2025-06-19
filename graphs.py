@@ -17,8 +17,8 @@ COLOR_ON_COLUMN = "Estimated" #'ID'  # Column to map the color on
 FONT_DICT = {
     'size': 16,
     'family': 'sans-serif',
-    'weight': 'normal',
-    'style': 'normal'
+    #'weight': 'normal',
+    #'style': 'normal'
 }
 
 

@@ -17,7 +17,7 @@ if 'show_apply' not in st.session_state:
     st.session_state.show_apply = True
 if 'show_binned_table' not in st.session_state:
     st.session_state.show_binned_table = False
-df = handle_file_upload()
+df, dataset_json = handle_file_upload()
 if df is not None:
-    process_inputs(df)
+    process_inputs(df, dataset_json)
 
