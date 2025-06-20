@@ -86,7 +86,7 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
     if new_method_flag:
         progress_bar = st.progress(0)
         status_text = st.empty()
-        status_text.text("We are searching the best strategy for you")
+        status_text.text("We are searching the best strategy for you...")
         time_past = 0
         for i in range(1, 101):
             status_text.text(f"{time_past} seconds")
@@ -150,14 +150,14 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
     #write_to_screen(f"We explored 100 candidates for finding the best strategy in {elapsed_time:.2f} seconds", 22)
 
 
-def display_graph(selected_method, best_binning_df_naive, best_binning_df_seercuts, df, col, new_method_flag, color_mapping_naive, color_mapping_seercuts, attribute_features):
+def display_graph(selected_method, truth_df, seercuts_df, df, col, new_method_flag, color_mapping_naive, color_mapping_seercuts, attribute_features):
     col1, col2 = col[0], col[1]
     with col1:
         if not st.session_state.show_binned_table:
             if selected_method == "Exhaustive":
-                plot_graph(best_binning_df_naive, df, "Exhaustive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive, attribute_features)
+                plot_graph(truth_df, df, "Exhaustive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive, attribute_features)
             elif selected_method == "SeerCuts":
-                plot_graph(best_binning_df_seercuts, df, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts, attribute_features)
+                plot_graph(seercuts_df, df, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts, attribute_features)
         else:
             df=pd.read_csv("data/Inspection_table/diabetes_binned.csv")
             st.dataframe(df)
@@ -174,26 +174,25 @@ def on_return_click():
     st.session_state.show_binned_table = False
 
 
-def display_table(sort_order, selected_method, best_binning_df_naive, best_binning_df_seercuts, col, color_mapping_naive, color_mapping_seercuts):
+def display_table(sort_order, selected_method, truth_df, seercuts_df, col, color_mapping_naive, color_mapping_seercuts, utility_runtime):
     col1, col2 = col[0], col[1]
     with col2:
         if selected_method == "Exhaustive":
-            best_df = best_binning_df_naive
             color_mapping = color_mapping_naive
+            # Sample 100 rows that have 'Estimated' == 0 and concatenate with the rows that have 'Estimated' == 1
+            best_df = pd.concat([truth_df[truth_df['Estimated'] == '1'],
+                                  truth_df[truth_df['Estimated'] == '0'].sample(n=min(100, len(truth_df[truth_df['Estimated'] == '0'])), random_state=1)])
         elif selected_method == "SeerCuts":
-            best_df = best_binning_df_seercuts  # Fixed incorrect assignment
+            best_df = seercuts_df  # Fixed incorrect assignment
             color_mapping = color_mapping_seercuts
 
         # Sort based on selected criteria
-        if sort_order == "Utility":
-            sorted_binning_df = best_df.sort_values(by="Utility", ascending=False)
-        elif sort_order == "Semantic":
-            sorted_binning_df = best_df.sort_values(by="Semantic", ascending=False)
+        sorted_binning_df = best_df.sort_values(by=sort_order, ascending=False)
 
         # Add color column based on the color mapping
         sorted_binning_df['color'] = sorted_binning_df[COLOR_ON_COLUMN].map(color_mapping)
         #print(color_mapping)
-        table_color_mapping = {'1': '#11c739', '0': '#cce8f7'}
+        table_color_mapping = {'0': '#cce8f7','1': '#11c739'}
 
         # Generate the HTML table with scrolling
         table_html = '<div style="max-height: 400px; overflow-y: auto;">'  # Scrolling container
@@ -214,9 +213,9 @@ def display_table(sort_order, selected_method, best_binning_df_naive, best_binni
 
         if selected_method == "Exhaustive":
             #write_to_screen(f"We explored 72 out of 22,192 candidates and found the best partitions in 7.41 seconds", 18)
-            write_to_screen(f"We explored 146 out of 146 candidates and found the best partitions in 11.45 seconds", 18)
+            write_to_screen(f"We explored {len(truth_df)} out of {len(truth_df)} candidates and found the best partitions in {round(len(truth_df)*utility_runtime, 2)} seconds", 18)
         else:
-            write_to_screen(f"We explored 72 out of 22,192 candidates and found the best partitions in 7.41 seconds", 18)
+            write_to_screen(f"We explored {len(seercuts_df)} out of {len(truth_df)} candidates and found the best partitions in {round(len(seercuts_df)*utility_runtime, 2)} seconds", 18)
             #write_to_screen(f"We explored 28 out of 146 candidates and found the best partitions in 2.32 seconds", 18)
         
         if st.session_state.clicked_point:

@@ -21,5 +21,6 @@
             "Fare": 0.35,
             "SibSp": 0.85
         }
-    ]
+    ],
+    "utility_runtime": 0.0108
 }

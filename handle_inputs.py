@@ -109,7 +109,7 @@ def process_inputs(df, dataset_json):
                 display_graph(st.session_state.selected_graph, st.session_state.truth_df, st.session_state.seercuts_df, df, col, new_graph_method_flag, color_mapping_naive, color_mapping_seercuts, attribute_features)
 
             if st.session_state.selected_sorting:
-                display_table(st.session_state.selected_sorting, graph_method, st.session_state.truth_df, st.session_state.seercuts_df, col, color_mapping_naive, color_mapping_seercuts)
+                display_table(st.session_state.selected_sorting, graph_method, st.session_state.truth_df, st.session_state.seercuts_df, col, color_mapping_naive, color_mapping_seercuts, dataset_json['utility_runtime'])
 
     else:
-        st.warning("Please select all required options (Attributes, Outcome, Task, Graph, Sorting) to proceed.")
+        st.warning("Please select all required options (Attributes, Outcome, Task) to proceed.")
