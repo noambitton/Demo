@@ -155,9 +155,12 @@ def display_graph(selected_method, truth_df, seercuts_df, df, col, new_method_fl
     with col1:
         if not st.session_state.show_binned_table:
             if selected_method == "Exhaustive":
-                plot_graph(truth_df, df, "Exhaustive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive, attribute_features)
+                # Only show 3000 rows for the exhaustive method to not overcrowd the scatter plot
+                sampled_truth = pd.concat([truth_df[truth_df['Estimated'] == '1'],
+                                  truth_df[truth_df['Estimated'] == '0'].sample(n=min(3000, len(truth_df[truth_df['Estimated'] == '0'])), random_state=1)])
+                plot_graph(sampled_truth, df, "Exhaustive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive, attribute_features)
             elif selected_method == "SeerCuts":
-                plot_graph(seercuts_df, df, "SeerCuts: Utility vs Semantic", 0.5, new_method_flag, color_mapping_seercuts, attribute_features)
+                plot_graph(seercuts_df, df, "SeerCuts: Utility vs Semantic", 0, new_method_flag, color_mapping_seercuts, attribute_features)
         else:
             df=pd.read_csv("data/Inspection_table/diabetes_binned.csv")
             st.dataframe(df)
@@ -218,16 +221,16 @@ def display_table(sort_order, selected_method, truth_df, seercuts_df, col, color
             write_to_screen(f"We explored {len(seercuts_df)} out of {len(truth_df)} candidates and found the best partitions in {round(len(seercuts_df)*utility_runtime, 2)} seconds", 18)
             #write_to_screen(f"We explored 28 out of 146 candidates and found the best partitions in 2.32 seconds", 18)
         
-        if st.session_state.clicked_point:
-            # Step 1: Show the Apply button only if it hasn't been clicked yet
-            if st.session_state.show_apply:
-                st.button("Apply & Inspect", key="apply_button", on_click=on_apply_click)  # Add unique key to prevent multiple clicks
+        #if st.session_state.clicked_point:
+        #    # Step 1: Show the Apply button only if it hasn't been clicked yet
+        #    if st.session_state.show_apply:
+        #        st.button("Apply & Inspect", key="apply_button", on_click=on_apply_click)  # Add unique key to prevent multiple clicks
 
-            # Step 2: If Apply is clicked, hide it and show other buttons
-            else:
-                col3, col4 = st.columns(2)
-                with col3:
-                    st.button("Return", key="return_button", on_click=on_return_click)
+        #    # Step 2: If Apply is clicked, hide it and show other buttons
+        #    else:
+        #        col3, col4 = st.columns(2)
+        #        with col3:
+        #            st.button("Return", key="return_button", on_click=on_return_click)
 
 
 
