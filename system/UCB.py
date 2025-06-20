@@ -2,7 +2,7 @@ import sys
 import os
 import random
 import numpy as np
-from MCC import *
+from system.MCC import *
 
 class Cluster:
     def __init__(self, clusterID):
@@ -38,7 +38,9 @@ class UCB:
         if self.t == 0.0:
             self.t = find_optimal_t(self.search_space)
 
-        self.evaluator = Evaluator(gt_data, semantic_metric, use_case)
+        self.evaluator = None
+        if self.gt_data is not None:
+            self.evaluator = Evaluator(gt_data, semantic_metric, use_case)
         # System attributes
         self.explored_nodes = None
         self.fully_explored_clusters = None
@@ -197,9 +199,20 @@ class UCB:
 
             # Compute distances
             n_llm_calls = self.n_samples
-            gd_value = self.evaluator.gd(est_P)
-            igd_value = self.evaluator.igd(est_P)
-            ahd_value = Evaluator.average_hausdorff_distance(gd_value, igd_value, mode='max')
+            if self.evaluator is not None:
+                gd_value = self.evaluator.gd(est_P)
+                igd_value = self.evaluator.igd(est_P)
+                ahd_value = Evaluator.average_hausdorff_distance(gd_value, igd_value, mode='max')
+                print(f"GD: {gd_value:.2f}, IGD: {igd_value:.2f}, AHD: {ahd_value:.2f}")
+                gd_list.append(gd_value)
+                igd_list.append(igd_value)
+                ahd_list.append(ahd_value)
+            else:
+                gd_value = 'No ground truth data provided.'
+                igd_value = 'No ground truth data provided.'
+                ahd_value = 'No ground truth data provided.'
+                print("No ground truth data provided, skipping distance calculations.")
+            
             cached_results[round] = {
                 'n_samples': self.n_samples, # budget, n_utility_calls
                 'alpha': self.alpha, 
@@ -215,31 +228,46 @@ class UCB:
                 'n_llm_calls': n_llm_calls,
                 'time_taken': end_time - start_time,
             }
-            gd_list.append(gd_value)
-            igd_list.append(igd_value)
-            ahd_list.append(ahd_value)
-            print(f"GD: {gd_value:.2f}, IGD: {igd_value:.2f}, AHD: {ahd_value:.2f}")
-        
-        # Print the mean, median and std of the distances
-        print("GD: ", np.mean(gd_list), np.median(gd_list), np.std(gd_list))
-        print("IGD: ", np.mean(igd_list), np.median(igd_list), np.std(igd_list))
-        print("HD: ", np.mean(ahd_list), np.median(ahd_list), np.std(ahd_list))
-        return {
-            'cached_ID': cached_ID,
-            'n_samples': self.n_samples,
-            'alpha': self.alpha, 
-            'p': self.p, 
-            't': self.t,
-            "GD mean": np.mean(gd_list),
-            "GD median": np.median(gd_list),
-            "GD std": np.std(gd_list),
-            "IGD mean": np.mean(igd_list),
-            "IGD median": np.median(igd_list),
-            "IGD std": np.std(igd_list),
-            "AHD mean": np.mean(ahd_list),
-            "AHD median": np.median(ahd_list),
-            "AHD std": np.std(ahd_list)
-        }, cached_results
+            
+        if self.evaluator is not None:
+            # Print the mean, median and std of the distances
+            print("GD: ", np.mean(gd_list), np.median(gd_list), np.std(gd_list))
+            print("IGD: ", np.mean(igd_list), np.median(igd_list), np.std(igd_list))
+            print("HD: ", np.mean(ahd_list), np.median(ahd_list), np.std(ahd_list))
+            return {
+                'cached_ID': cached_ID,
+                'n_samples': self.n_samples,
+                'alpha': self.alpha, 
+                'p': self.p, 
+                't': self.t,
+                "GD mean": np.mean(gd_list),
+                "GD median": np.median(gd_list),
+                "GD std": np.std(gd_list),
+                "IGD mean": np.mean(igd_list),
+                "IGD median": np.median(igd_list),
+                "IGD std": np.std(igd_list),
+                "AHD mean": np.mean(ahd_list),
+                "AHD median": np.median(ahd_list),
+                "AHD std": np.std(ahd_list)
+            }, cached_results
+        else:
+            print("No ground truth data provided, skipping distance calculations.")
+            return {
+                'cached_ID': cached_ID,
+                'n_samples': self.n_samples,
+                'alpha': self.alpha, 
+                'p': self.p, 
+                't': self.t,
+                'GD mean': 'No ground truth data provided.',
+                'GD median': 'No ground truth data provided.',
+                'GD std': 'No ground truth data provided.',
+                'IGD mean': 'No ground truth data provided.',
+                'IGD median': 'No ground truth data provided.',
+                'IGD std': 'No ground truth data provided.',
+                'AHD mean': 'No ground truth data provided.',
+                'AHD median': 'No ground truth data provided.',
+                'AHD std': 'No ground truth data provided.'
+            }, cached_results
 
 def UCB_estimate(gt_data, alpha, search_space, strategy_space, clustering, semantic_metric='l2_norm', clustering_params:Dict={}, sampling_params:Dict={}, use_case=None, if_runtime_stats=True, gold_standard=None, data=None, y_col=None) -> List:
     """

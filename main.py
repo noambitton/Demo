@@ -17,7 +17,15 @@ if 'show_apply' not in st.session_state:
     st.session_state.show_apply = True
 if 'show_binned_table' not in st.session_state:
     st.session_state.show_binned_table = False
+if 'run_sequential_ucb' not in st.session_state:
+    st.session_state.run_sequential_ucb = True
+if 'truth_df' not in st.session_state:
+    st.session_state.truth_df = pd.DataFrame()
+if 'seercuts_df' not in st.session_state:
+    st.session_state.seercuts_df = pd.DataFrame()
+
+
 df, dataset_json = handle_file_upload()
+
 if df is not None:
     process_inputs(df, dataset_json)
-

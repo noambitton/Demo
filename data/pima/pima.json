@@ -1,6 +1,6 @@
 {
     "dataset": "pima",
-    "data_path": "data/pima/input/diabetes.csv",
+    "data_path": "data/pima/input/pima.csv",
     "min_num_bins": 2,
     "max_num_bins": 20,
     "features": ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"],

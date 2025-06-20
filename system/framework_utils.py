@@ -16,10 +16,10 @@ from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bo
 from sklearn.preprocessing import minmax_scale
 from scipy.spatial.distance import squareform
 
-#from scripts.framework.discretizers import *
-from scripts.framework.TestSearchSpace import *
-#from scripts.framework.SearchSpace import *
-from scripts.framework.utils import *
+#from discretizers import *
+from system.TestSearchSpace import *
+#from SearchSpace import *
+from system.utils import *
 
 ID_COUNT = 0
 

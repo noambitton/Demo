@@ -9,9 +9,9 @@ from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bo
 
 #from import_packages import *
 #from discretizers import *
-from TestSearchSpace import *
-from framework_utils import *
-from utils import *
+from system.TestSearchSpace import *
+from system.framework_utils import *
+from system.utils import *
 from pymoo.indicators.gd import GD
 from pymoo.indicators.igd import IGD
 #from gpt_grader import evaluate_groupings_gpt

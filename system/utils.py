@@ -6,7 +6,6 @@ from typing import List, Union, Any, Tuple, Dict
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from scipy.spatial import cKDTree
-ppath = sys.path[0] + '/../../'
 
 MODEL_ID = "gpt-3.5-turbo"
 

@@ -41,18 +41,18 @@ def show_histogram(matched_row, df, attribute_features, green_flag):
                     continue
 
                 try:
-                    partition_list = matched_row.iloc[0]["Partition"]
+                    partition_edges = matched_row.iloc[0][attribute]
                     # TODO: When partition won't be hardcoded- add this warning and change pos_in_partition_list to
                     #  be only i+j
                     #
                     #  if i + j >= len(partition_list):
                     #     st.warning(f"Not enough partition entries for '{attribute}'")
                     #     continue
-                    pos_in_partition_list = (i+j) % 3
-                    partition_edges = partition_list[pos_in_partition_list]
-                    if not partition_edges or len(partition_edges) < 2:
-                        st.warning(f"No valid bins for '{attribute}'")
-                        continue
+                    #pos_in_partition_list = (i+j) % 3
+                    #partition_edges = partition_list[pos_in_partition_list]
+                    #if not partition_edges or len(partition_edges) < 2:
+                    #    st.warning(f"No valid bins for '{attribute}'")
+                    #    continue
 
                     bins = np.array(partition_edges)
                     attribute_data = df[attribute].dropna()

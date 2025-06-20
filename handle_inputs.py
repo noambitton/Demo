@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
+import json
 from graphs import *
 from consts import *
+from system.sequential_UCB import run_sequential_ucb
 
-
-def get_color_mapping(df):
+def get_color_mapping():
     #unique_options = df[COLOR_ON_COLUMN].astype(str).unique()
     #colors = px.colors.qualitative.Plotly
     return {'1': '#11c739', '0': '#a1c0dc'}
@@ -27,7 +28,7 @@ def select_features_from_csv(dataset_json):
 def select_task_option():
    # enlarge_selectbox()
     task_option = st.sidebar.selectbox("Choose a Task",
-                                       ["Select Task", "Visualizations", "Modeling", ]) #"Data Imputation"
+                                       ["Select Task", "Modeling", ]) #"Data Imputation"
     return task_option
 
 
@@ -63,26 +64,23 @@ def process_inputs(df, dataset_json):
     attribute_features, outcome_feature = select_features_from_csv(dataset_json)
     task_option = select_task_option()
 
-    if task_option=="Visualizations":
-        best_binning_df_naive = vis_naive_df
-        best_binning_df_seercuts = vis_seercuts_df
-    if task_option=="Modeling":
-        best_binning_df_naive = pred_binning_df
-        best_binning_df_seercuts = pred_binning_df
-    
+    if st.session_state.run_sequential_ucb and dataset_json is not None:
+        if task_option == "Modeling":
+            st.session_state.truth_df = load_truth(dataset_json['dataset'], use_case='modeling')
+            st.session_state.seercuts_df = run_sequential_ucb(PROJECT_DIR, dataset_json, use_case='modeling')
+            st.session_state.run_sequential_ucb = False
+
     col = st.columns([2, 1])
     col1, col2 = col[0], col[1]
 
     # Update the check to ensure both attributes, outcome, task, graph method, and sorting method are selected before displaying the content
-    if attribute_features and outcome_feature != "Select Outcome" and task_option != "Select Task":
-        best_binning_df_naive['ID'] = best_binning_df_naive['ID'].astype(str)
-        best_binning_df_seercuts['ID'] = best_binning_df_seercuts['ID'].astype(str)
+    if not st.session_state.run_sequential_ucb:
         new_graph_method_flag = False
 
-        color_mapping_naive = get_color_mapping(best_binning_df_naive)
-        color_mapping_seercuts = get_color_mapping(best_binning_df_seercuts)
+        color_mapping_naive = get_color_mapping()
+        color_mapping_seercuts = get_color_mapping()
         with col1:
-            graph_method = st.selectbox("Select Graph Method", ["", "Exhaustive", "SeerCuts"],
+            graph_method = st.selectbox("Select Method", ["", "Exhaustive", "SeerCuts"],
                                         index=2 if not st.session_state.selected_graph else ["", "Exhaustive",
                                                                                              "SeerCuts"].index(
                                             st.session_state.selected_graph))
@@ -108,10 +106,10 @@ def process_inputs(df, dataset_json):
         # Now only show the graph and table if both are selected
         if graph_method and sorting_method:
             if st.session_state.selected_graph:
-                display_graph(st.session_state.selected_graph, best_binning_df_naive, best_binning_df_seercuts, df, col, new_graph_method_flag, color_mapping_naive, color_mapping_seercuts, attribute_features)
+                display_graph(st.session_state.selected_graph, st.session_state.truth_df, st.session_state.seercuts_df, df, col, new_graph_method_flag, color_mapping_naive, color_mapping_seercuts, attribute_features)
 
             if st.session_state.selected_sorting:
-                display_table(st.session_state.selected_sorting, graph_method, best_binning_df_naive, best_binning_df_seercuts, col, color_mapping_naive, color_mapping_seercuts)
+                display_table(st.session_state.selected_sorting, graph_method, st.session_state.truth_df, st.session_state.seercuts_df, col, color_mapping_naive, color_mapping_seercuts)
 
     else:
         st.warning("Please select all required options (Attributes, Outcome, Task, Graph, Sorting) to proceed.")
