@@ -84,12 +84,12 @@ def get_semantic_score(candidate, metric:SyntaxWarning):
     else:
         raise ValueError(f"Unknown semantic metric: {metric}")
 
-def run_sequential_ucb(project_root, exp_config, use_case='modeling')-> pd.DataFrame:
+def run_sequential_ucb(project_root, exp_config, use_case='modeling'):
     imputer = 'KNN'  # 'KNN', 'Simple', 'Iterative'
     missing_data_fraction = 0.3 # fraction of data to be used for imputation
     semantic_metric = 'gpt_semantics' #'KLDiv', 'gpt_semantics'
     alpha = 2 # Exploration parameter for UCB
-    p = 0.5
+    p = 0.3
     t = 0.4 # Automatic tune when set to 0.0, otherwise set to a fixed value
     
     # read json file
@@ -118,7 +118,7 @@ def run_sequential_ucb(project_root, exp_config, use_case='modeling')-> pd.DataF
     numbers_samples = []
     n_strategies_tried = 0
     est_partitions = []
-    for permutation in permutations[:2]:
+    for permutation in permutations:
     
         est_partition_dicts = []
         processed_attributes = []
@@ -238,7 +238,7 @@ def run_sequential_ucb(project_root, exp_config, use_case='modeling')-> pd.DataF
     # Drop duplicates based on rows
     partition_df['ID'] = partition_df['ID'].astype(str)
     partition_df['Estimated'] = partition_df['Estimated'].astype(str)
-    return partition_df
+    return partition_df, n_strategies_tried
 
 if __name__ == '__main__':
     ppath = sys.path[0] + '/../'

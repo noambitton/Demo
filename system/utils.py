@@ -22,8 +22,8 @@ def load_raw_data(project_root, exp_config, use_case=None, missing_data_fraction
     dataset = exp_config['dataset']
     attributes = list(exp_config['attributes'].keys())
     
-    if dataset == 'pima':
-        raw_data = raw_data[(raw_data['Age'] > 19) & (raw_data['Age'] < 61)]
+    #if dataset == 'pima':
+    #    raw_data = raw_data[(raw_data['Age'] > 19) & (raw_data['Age'] < 61)]
     
     if use_case == 'imputation':
         for attr in attributes:
@@ -230,7 +230,7 @@ def compute_pareto_front(datapoints: List) -> List[int]:
     max_utility = -np.inf
 
     for i in range(len(sorted_points)):
-        if sorted_points[i][1] > max_utility:
+        if sorted_points[i][1] >= max_utility:
             pareto_indices.append(sorted_indices[i])
             max_utility = sorted_points[i][1]
 

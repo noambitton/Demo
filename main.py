@@ -23,7 +23,10 @@ if 'truth_df' not in st.session_state:
     st.session_state.truth_df = pd.DataFrame()
 if 'seercuts_df' not in st.session_state:
     st.session_state.seercuts_df = pd.DataFrame()
-
+if 'seq_UCB_time' not in st.session_state:
+    st.session_state.seq_UCB_time = 0
+if 'n_seercuts' not in st.session_state:
+    st.session_state.n_seercuts = 0
 
 df, dataset_json = handle_file_upload()
 

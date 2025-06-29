@@ -96,6 +96,10 @@ def plot_graph(binning_df, df, title, delay, new_method_flag, color_mapping, att
         progress_bar.empty()
         status_text.text("")
 
+    green_df = binning_df[binning_df[COLOR_ON_COLUMN] == '1']
+    other_df = binning_df[binning_df[COLOR_ON_COLUMN] != '1']
+    binning_df = pd.concat([other_df, green_df], ignore_index=True)
+
     fig = px.scatter(
         binning_df,
         x="Utility",
@@ -158,7 +162,7 @@ def display_graph(selected_method, truth_df, seercuts_df, df, col, new_method_fl
                 # Only show 3000 rows for the exhaustive method to not overcrowd the scatter plot
                 sampled_truth = pd.concat([truth_df[truth_df['Estimated'] == '1'],
                                   truth_df[truth_df['Estimated'] == '0'].sample(n=min(3000, len(truth_df[truth_df['Estimated'] == '0'])), random_state=1)])
-                plot_graph(sampled_truth, df, "Exhaustive Method: Utility vs Semantic", 5, new_method_flag, color_mapping_naive, attribute_features)
+                plot_graph(sampled_truth, df, "Exhaustive Method: Utility vs Semantic", 1, new_method_flag, color_mapping_naive, attribute_features)
             elif selected_method == "SeerCuts":
                 plot_graph(seercuts_df, df, "SeerCuts: Utility vs Semantic", 0, new_method_flag, color_mapping_seercuts, attribute_features)
         else:
@@ -206,7 +210,7 @@ def display_table(sort_order, selected_method, truth_df, seercuts_df, col, color
             color = table_color_mapping.get(row[COLOR_ON_COLUMN], 'white')  # Default to 'gray' if not found
             #color = 'gray'
             table_html += f'<tr style="background-color:{color};">'
-            table_html += f'<td>{row["ID"]}</td><td>{row["Semantic"]:.2f}</td><td>{row["Utility"]:.2f}</td></tr>'
+            table_html += f'<td>{row["ID"]}</td><td>{row["Semantic"]:.6f}</td><td>{row["Utility"]:.6f}</td></tr>'
 
         table_html += "</tbody></table></div>"  # Close the scrollable container
 
@@ -218,7 +222,7 @@ def display_table(sort_order, selected_method, truth_df, seercuts_df, col, color
             #write_to_screen(f"We explored 72 out of 22,192 candidates and found the best partitions in 7.41 seconds", 18)
             write_to_screen(f"We explored {len(truth_df)} out of {len(truth_df)} candidates and found the best partitions in {round(len(truth_df)*utility_runtime, 2)} seconds", 18)
         else:
-            write_to_screen(f"We explored {len(seercuts_df)} out of {len(truth_df)} candidates and found the best partitions in {round(len(seercuts_df)*utility_runtime, 2)} seconds", 18)
+            write_to_screen(f"We explored {st.session_state.n_seercuts} out of {len(truth_df)} candidates and found the best partitions in {round(st.session_state.seq_UCB_time, 2)} seconds", 18)
             #write_to_screen(f"We explored 28 out of 146 candidates and found the best partitions in 2.32 seconds", 18)
         
         #if st.session_state.clicked_point:

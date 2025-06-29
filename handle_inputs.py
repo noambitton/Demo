@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import json
+import time
 from graphs import *
 from consts import *
 from system.sequential_UCB import run_sequential_ucb
@@ -67,7 +68,9 @@ def process_inputs(df, dataset_json):
     if st.session_state.run_sequential_ucb and dataset_json is not None:
         if task_option == "Modeling":
             st.session_state.truth_df = load_truth(dataset_json['dataset'], use_case='modeling')
-            st.session_state.seercuts_df = run_sequential_ucb(PROJECT_DIR, dataset_json, use_case='modeling')
+            start_time = time.time()
+            st.session_state.seercuts_df, st.session_state.n_seercuts = run_sequential_ucb(PROJECT_DIR, dataset_json, use_case='modeling')
+            st.session_state.seq_UCB_time = time.time() - start_time
             st.session_state.run_sequential_ucb = False
 
     col = st.columns([2, 1])
